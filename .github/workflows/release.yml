@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.21'
+
+    - name: Build binary
+      run: |
+        go build -o node-manager-cli
+
+    - name: Archive binary
+      run: |
+        tar -czvf node-manager-cli.tar.gz node-manager-cli
+
+    - name: Upload release asset (tar.gz)
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./node-manager-cli.tar.gz
+        asset_name: node-manager-cli.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload release asset (binary)
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./node-manager-cli
+        asset_name: node-manager-cli
+        asset_content_type: application/octet-stream
