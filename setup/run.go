@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
+
+	"github.com/briandowns/spinner"
+	"github.com/fatih/color"
 )
 
-func RunPlaybook(network, nodeType string) {
-	fmt.Println("Running the Ansible playbook...")
-	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", "/opt/nimiq-ansible/ansible/playbook.yml", "--extra-vars", fmt.Sprintf("network=%s node_type=%s", network, nodeType))
+func RunPlaybook(network, nodeType, protocol string) {
+	playbookPath := filepath.Join("/opt", fmt.Sprintf("%s-ansible", protocol), "ansible", "playbook.yml")
+	color.Blue("Running the Ansible playbook...")
+	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--extra-vars", fmt.Sprintf("network=%s node_type=%s", network, nodeType))
+	color.Green("Ansible playbook run completed")
 }
 
 func CopyBinaryToUsrLocalBin() {
@@ -29,7 +35,9 @@ func CopyBinaryToUsrLocalBin() {
 		}
 	}
 
-	// Copy the executable to the destination path
+	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+	s.Prefix = "Copying binary to /usr/local/bin... "
+	s.Start()
 	input, err := os.ReadFile(exePath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading executable: %v\n", err)
@@ -39,6 +47,6 @@ func CopyBinaryToUsrLocalBin() {
 		fmt.Fprintf(os.Stderr, "Error writing executable to /usr/local/bin: %v\n", err)
 		os.Exit(1)
 	}
-
-	fmt.Println("Binary copied to /usr/local/bin")
+	s.Stop()
+	color.Green("Binary copied to /usr/local/bin")
 }

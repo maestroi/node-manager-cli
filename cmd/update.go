@@ -14,7 +14,7 @@ var force bool
 
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "Update protocol node to the latest version",
+	Short: "Update Nimiq node to the latest version",
 	Run: func(cmd *cobra.Command, args []string) {
 		updateNode()
 	},
@@ -63,7 +63,7 @@ func updateNode() {
 		config.Version = version
 		config.Branch = branch
 		setup.SaveConfig(config)
-		setup.RunPlaybook(config.Network, config.NodeType)
+		setup.RunPlaybook(config.Network, config.NodeType, config.Protocol)
 		fmt.Println("Nimiq node update complete!")
 	} else {
 		fmt.Println("You already have the latest version.")

@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"node-manager-cli/config"
 	"node-manager-cli/setup"
 	"os"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +16,7 @@ var branch string
 
 var setupCmd = &cobra.Command{
 	Use:   "setup",
-	Short: "Setup a protocol node.",
+	Short: "Setup or update Nimiq node",
 	Run: func(cmd *cobra.Command, args []string) {
 		setupNode()
 	},
@@ -32,16 +32,16 @@ func init() {
 
 func setupNode() {
 	if _, err := os.Stat(setup.ConfigFilePath); err == nil {
-		fmt.Fprintf(os.Stderr, "Error: Configuration file already exists. A node is already set up on this system.\n")
+		color.Red("Error: Configuration file already exists. A node is already set up on this system.")
 		os.Exit(1)
 	}
 
 	if !config.IsValidConfiguration(protocol, network, nodeType) {
-		fmt.Fprintf(os.Stderr, "Error: Unsupported configuration. Use the 'list' command to see all supported configurations.\n")
+		color.Red("Error: Unsupported configuration. Use the 'list' command to see all supported configurations.")
 		os.Exit(1)
 	}
 
-	fmt.Println("Setting up Nimiq node for", network, "network with protocol", protocol)
+	color.Blue("Setting up Nimiq node for %s network with protocol %s", network, protocol)
 	setup.InstallDependencies()
 	if !setup.IsCommandAvailable("ansible") {
 		setup.InstallAnsible()
@@ -49,9 +49,12 @@ func setupNode() {
 	setup.InstallAnsibleGalaxyCollection()
 	setup.UpdateRepository(protocol, branch)
 
+	// Copy binary to /usr/local/bin, but handle in-use binary situation
+	setup.CopyBinaryToUsrLocalBin()
+
 	version, err := setup.GetVersion(protocol, branch)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error fetching version: %v\n", err)
+		color.Red("Error fetching version: %v", err)
 		os.Exit(1)
 	}
 
@@ -61,10 +64,8 @@ func setupNode() {
 		NodeType:   nodeType,
 		Version:    version,
 		Branch:     branch,
-		CLIVersion: "0.1.0", // Set this to the current version of your CLI
+		CLIVersion: "1.0.0", // Set this to the current version of your CLI
 	})
-	setup.RunPlaybook(network, nodeType)
-	// Copy binary to /usr/local/bin, but handle in-use binary situation
-	setup.CopyBinaryToUsrLocalBin()
-	fmt.Println("Nimiq node setup/update complete!")
+	setup.RunPlaybook(network, nodeType, protocol)
+	color.Green("Nimiq node setup/update complete!")
 }
