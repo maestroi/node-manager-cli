@@ -11,6 +11,12 @@ Node Manager CLI is a command-line tool designed to manage the setup, update, an
 - **List Supported Configurations**: View all supported protocols, networks, and node types.
 - **Version Management**: View the CLI version.
 
+## Easy install
+
+```sh
+curl -L -o node-manager-cli https://github.com/maestroi/node-manager-cli/releases/latest/download/node-manager-cli && chmod +x node-manager-cli
+```
+
 ## Installation
 
 1. Clone the repository:

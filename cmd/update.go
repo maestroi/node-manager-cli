@@ -14,7 +14,7 @@ var force bool
 
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "Update Nimiq node to the latest version",
+	Short: "Update protocol node to the latest version",
 	Run: func(cmd *cobra.Command, args []string) {
 		updateNode()
 	},

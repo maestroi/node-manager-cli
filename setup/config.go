@@ -14,11 +14,12 @@ import (
 const ConfigFilePath = "/etc/node-manager-cli/node-manager-cli-config.json"
 
 type Config struct {
-	Protocol string `json:"protocol"`
-	Network  string `json:"network"`
-	NodeType string `json:"node_type"`
-	Version  string `json:"version"`
-	Branch   string `json:"branch,omitempty"`
+	Protocol   string `json:"protocol"`
+	Network    string `json:"network"`
+	NodeType   string `json:"node_type"`
+	Version    string `json:"version"`
+	Branch     string `json:"branch,omitempty"`
+	CLIVersion string `json:"cli_version"`
 }
 
 func SaveConfig(config Config) {
@@ -88,4 +89,21 @@ func getLatestVersion(protocol string) (string, error) {
 		return "", fmt.Errorf("no tags found in repository %s/%s", owner, repo)
 	}
 	return tags[0].Name, nil
+}
+
+func GetLatestCLIVersion() (string, error) {
+	apiURL := "https://api.github.com/repos/maestroi/node-manager-cli/releases/latest"
+	resp, err := http.Get(apiURL)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	var release struct {
+		TagName string `json:"tag_name"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
+		return "", err
+	}
+	return release.TagName, nil
 }

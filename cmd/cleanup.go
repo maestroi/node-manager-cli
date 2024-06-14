@@ -10,7 +10,7 @@ import (
 
 var cleanupCmd = &cobra.Command{
 	Use:   "cleanup",
-	Short: "Cleanup and remove all configurations and files (use with CAUTION!!!)",
+	Short: "Cleanup and remove all configurations and data files (use with CAUTION!!!)",
 	Run: func(cmd *cobra.Command, args []string) {
 		cleanupNode()
 	},

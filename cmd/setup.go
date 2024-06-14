@@ -16,7 +16,7 @@ var branch string
 
 var setupCmd = &cobra.Command{
 	Use:   "setup",
-	Short: "Setup or update Nimiq node",
+	Short: "Setup a protocol node.",
 	Run: func(cmd *cobra.Command, args []string) {
 		setupNode()
 	},
@@ -48,13 +48,23 @@ func setupNode() {
 	}
 	setup.InstallAnsibleGalaxyCollection()
 	setup.UpdateRepository(protocol, branch)
-	setup.CopyBinaryToUsrLocalBin()
+
 	version, err := setup.GetVersion(protocol, branch)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error fetching version: %v\n", err)
 		os.Exit(1)
 	}
-	setup.SaveConfig(setup.Config{Protocol: protocol, Network: network, NodeType: nodeType, Version: version, Branch: branch})
+
+	setup.SaveConfig(setup.Config{
+		Protocol:   protocol,
+		Network:    network,
+		NodeType:   nodeType,
+		Version:    version,
+		Branch:     branch,
+		CLIVersion: "0.1.0", // Set this to the current version of your CLI
+	})
 	setup.RunPlaybook(network, nodeType)
+	// Copy binary to /usr/local/bin, but handle in-use binary situation
+	setup.CopyBinaryToUsrLocalBin()
 	fmt.Println("Nimiq node setup/update complete!")
 }
