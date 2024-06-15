@@ -3,6 +3,7 @@ package cmd
 import (
 	"node-manager-cli/config"
 	"node-manager-cli/setup"
+	"node-manager-cli/utils"
 	"os"
 
 	"github.com/fatih/color"
@@ -41,7 +42,7 @@ func setupNode() {
 		os.Exit(1)
 	}
 
-	color.Blue("Setting up Nimiq node for %s network with protocol %s", network, protocol)
+	color.Blue("Setting up %s node for %s network with node type %s", protocol, network, nodeType)
 	setup.InstallDependencies()
 	if !setup.IsCommandAvailable("ansible") {
 		setup.InstallAnsible()
@@ -68,4 +69,14 @@ func setupNode() {
 	})
 	setup.RunPlaybook(network, nodeType, protocol)
 	color.Green("Nimiq node setup/update complete!")
+
+	ipAddress, err := utils.GetPublicIPAddress()
+	if err != nil {
+		color.Red("Error getting public IP address: %v", err)
+	} else {
+		color.Green("Grafana is available at: http://%s/grafana", ipAddress)
+		color.Yellow("Default Grafana username: admin")
+		color.Yellow("Default Grafana password: nimiq")
+		color.Red("It is strongly recommended to change the default Grafana password.")
+	}
 }
