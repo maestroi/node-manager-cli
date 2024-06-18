@@ -45,7 +45,7 @@ curl -L -o node-manager-cli https://github.com/maestroi/node-manager-cli/release
 Set up a Nimiq node:
 
 ```sh
-sudo node-manager-cli setup --network <network> --node-type <node-type> --protocol <protocol> --branch <branch>
+sudo ./node-manager-cli setup --network <network> --node-type <node-type> --protocol <protocol>
 ```
 
 - `<network>`: The network to deploy the node on (default: `testnet`).
@@ -56,7 +56,7 @@ sudo node-manager-cli setup --network <network> --node-type <node-type> --protoc
 Example:
 
 ```sh
-sudo node-manager-cli setup --network testnet --node-type validator --protocol nimiq --branch master
+sudo ./node-manager-cli setup --network testnet --node-type validator --protocol nimiq
 ```
 
 ### Update
