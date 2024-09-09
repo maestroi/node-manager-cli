@@ -24,7 +24,7 @@ func init() {
 	runWithTagsCmd.Flags().StringVarP(&network, "network", "n", "testnet", "Network to run the playbook on")
 	runWithTagsCmd.Flags().StringVarP(&nodeType, "node-type", "t", "validator", "Type of the node")
 	runWithTagsCmd.Flags().StringVarP(&protocol, "protocol", "p", "nimiq", "Protocol to run (e.g., nimiq, another-protocol)")
-	runWithTagsCmd.Flags().StringVarP(&path, "data-path", "dp", "/opt", "location to install the datadir of node")
+	runWithTagsCmd.Flags().StringVarP(&path, "data-path", "d", "/opt", "location to install the datadir of node")
 	runWithTagsCmd.Flags().StringVarP(&tags, "tags", "g", "", "Tags to use for the Ansible playbook")
 }
 

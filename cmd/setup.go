@@ -29,7 +29,7 @@ func init() {
 	setupCmd.Flags().StringVarP(&network, "network", "n", "testnet", "Network to deploy the node on")
 	setupCmd.Flags().StringVarP(&nodeType, "node-type", "t", "validator", "Type of the node")
 	setupCmd.Flags().StringVarP(&protocol, "protocol", "p", "nimiq", "Protocol to deploy (e.g., nimiq, another-protocol)")
-	setupCmd.Flags().StringVarP(&path, "data-path", "dp", "/opt", "location to install the datadir of node")
+	setupCmd.Flags().StringVarP(&path, "data-path", "d", "/opt", "location to install the datadir of node")
 	setupCmd.Flags().StringVarP(&branch, "branch", "b", "", "Branch to use for the protocol repository (e.g., master, main)")
 }
 
