@@ -24,6 +24,7 @@ func init() {
 	runWithTagsCmd.Flags().StringVarP(&network, "network", "n", "testnet", "Network to run the playbook on")
 	runWithTagsCmd.Flags().StringVarP(&nodeType, "node-type", "t", "validator", "Type of the node")
 	runWithTagsCmd.Flags().StringVarP(&protocol, "protocol", "p", "nimiq", "Protocol to run (e.g., nimiq, another-protocol)")
+	runWithTagsCmd.Flags().StringVarP(&path, "data-path", "dp", "/opt", "location to install the datadir of node")
 	runWithTagsCmd.Flags().StringVarP(&tags, "tags", "g", "", "Tags to use for the Ansible playbook")
 }
 
@@ -45,6 +46,6 @@ func runWithTags() {
 	}
 
 	color.Blue("Running Ansible playbook with tags %s for %s network with protocol %s", tags, config.Network, config.Protocol)
-	setup.RunPlaybookWithTags(config.Network, config.NodeType, config.Protocol, tags)
+	setup.RunPlaybookWithTags(config.Network, config.NodeType, config.Protocol, config.DataPath, tags)
 	color.Green("Ansible playbook with tags %s run completed", tags)
 }

@@ -14,6 +14,7 @@ var network string
 var nodeType string
 var protocol string
 var branch string
+var path string
 
 var setupCmd = &cobra.Command{
 	Use:   "setup",
@@ -28,6 +29,7 @@ func init() {
 	setupCmd.Flags().StringVarP(&network, "network", "n", "testnet", "Network to deploy the node on")
 	setupCmd.Flags().StringVarP(&nodeType, "node-type", "t", "validator", "Type of the node")
 	setupCmd.Flags().StringVarP(&protocol, "protocol", "p", "nimiq", "Protocol to deploy (e.g., nimiq, another-protocol)")
+	setupCmd.Flags().StringVarP(&path, "data-path", "dp", "/opt", "location to install the datadir of node")
 	setupCmd.Flags().StringVarP(&branch, "branch", "b", "", "Branch to use for the protocol repository (e.g., master, main)")
 }
 
@@ -65,9 +67,10 @@ func setupNode() {
 		NodeType:   nodeType,
 		Version:    version,
 		Branch:     branch,
+		DataPath:   path,
 		CLIVersion: "1.0.0", // Set this to the current version of your CLI
 	})
-	setup.RunPlaybook(network, nodeType, protocol)
+	setup.RunPlaybook(network, nodeType, protocol, path)
 	color.Green("Nimiq node setup/update complete!")
 
 	ipAddress, err := utils.GetPublicIPAddress()

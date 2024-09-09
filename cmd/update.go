@@ -65,7 +65,7 @@ func updateNode() {
 		config.Version = version
 		config.Branch = branch
 		setup.SaveConfig(config)
-		setup.RunPlaybook(config.Network, config.NodeType, config.Protocol)
+		setup.RunPlaybook(config.Network, config.NodeType, config.Protocol, config.DataPath)
 		fmt.Println("Nimiq node update complete!")
 
 		ipAddress, err := utils.GetPublicIPAddress()

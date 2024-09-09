@@ -8,22 +8,22 @@ import (
 	"github.com/fatih/color"
 )
 
-func RunPlaybook(network, nodeType, protocol string) {
+func RunPlaybook(network, nodeType, protocol, dataPath string) {
 	playbookPath := filepath.Join("/opt", fmt.Sprintf("%s-ansible", protocol), "ansible", "playbook.yml")
 	color.Blue("Running the Ansible playbook...")
-	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--extra-vars", fmt.Sprintf("network=%s node_type=%s", network, nodeType))
+	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--extra-vars", fmt.Sprintf("network=%s node_type=%s data_path=%s", network, nodeType, dataPath))
 	color.Green("Ansible playbook run completed")
 }
 
-func RunPlaybookWithTags(network, nodeType, protocol, tags string) {
+func RunPlaybookWithTags(network, nodeType, protocol, dataPath, tags string) {
 	playbookPath := filepath.Join("/opt", fmt.Sprintf("%s-ansible", protocol), "ansible", "playbook.yml")
 	color.Blue("Running the Ansible playbook with tags: %s", tags)
-	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--tags", tags, "--extra-vars", fmt.Sprintf("network=%s node_type=%s", network, nodeType))
+	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--tags", tags, "--extra-vars", fmt.Sprintf("network=%s node_type=%s data_path=%s", network, nodeType, dataPath))
 	color.Green("Ansible playbook with tags %s run completed", tags)
 }
 
-func RunResetPlaybook(network, nodeType, protocol string) {
-	RunPlaybookWithTags(network, nodeType, protocol, "reset")
+func RunResetPlaybook(network, nodeType, protocol, dataPath string) {
+	RunPlaybookWithTags(network, nodeType, protocol, dataPath, "reset")
 }
 
 func CopyBinaryToUsrLocalBin() {

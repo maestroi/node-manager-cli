@@ -1,7 +1,7 @@
 package cmd
 
 var ProtocolRepoMap = map[string]string{
-	"nimiq": "https://github.com/maestroi/nimiq-ansible.git",
+	"nimiq": "https://github.com/Beardsoft/nimiq-ansible.git",
 	// Add other protocols here
 }
 

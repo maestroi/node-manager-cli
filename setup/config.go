@@ -19,6 +19,7 @@ type Config struct {
 	NodeType   string `json:"node_type"`
 	Version    string `json:"version"`
 	Branch     string `json:"branch,omitempty"`
+	DataPath   string `json:"data_path"`
 	CLIVersion string `json:"cli_version"`
 }
 
