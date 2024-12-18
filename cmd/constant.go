@@ -8,6 +8,7 @@ var ProtocolRepoMap = map[string]string{
 var SupportedConfigurations = map[string]map[string][]string{
 	"nimiq": {
 		"testnet": {"validator", "full_node", "history_node"},
+		"mainnet": {"validator", "full_node", "history_node"},
 		// Add other networks and node types here if needed
 	},
 	// Add other protocols here if needed
