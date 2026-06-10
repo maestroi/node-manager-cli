@@ -26,7 +26,11 @@ func init() {
 
 func cleanupNode() {
 	fmt.Println("Cleaning up configuration and files...")
-	os.RemoveAll("/opt/nimiq-ansible")
+	if cfg, err := setup.LoadConfig(); err == nil {
+		os.RemoveAll(setup.AnsibleRepoPath(cfg.Protocol))
+	} else {
+		os.RemoveAll(setup.AnsibleRepoPath("nimiq"))
+	}
 	os.Remove(setup.ConfigFilePath)
 	os.Remove("/usr/local/bin/node-manager-cli")
 	fmt.Println("Configuration and files cleaned up.")

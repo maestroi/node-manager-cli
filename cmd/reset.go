@@ -37,6 +37,6 @@ func resetNode() {
 	}
 
 	color.Blue("Resetting Nimiq node ledger for %s network with protocol %s", config.Network, config.Protocol)
-	setup.RunResetPlaybook(config.Network, config.NodeType, config.Protocol, config.DataPath)
+	setup.RunResetPlaybook(config.Network, config.NodeType, config.Protocol, config.DataPath, config.Version)
 	color.Green("Nimiq node ledger reset complete!")
 }

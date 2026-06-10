@@ -68,9 +68,9 @@ func setupNode() {
 		Version:    version,
 		Branch:     branch,
 		DataPath:   path,
-		CLIVersion: "1.0.0", // Set this to the current version of your CLI
+		CLIVersion: config.CLIVersion,
 	})
-	setup.RunPlaybook(network, nodeType, protocol, path)
+	setup.RunPlaybook(network, nodeType, protocol, path, version)
 	color.Green("Nimiq node setup/update complete!")
 
 	ipAddress, err := utils.GetPublicIPAddress()

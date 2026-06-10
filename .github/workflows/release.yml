@@ -10,36 +10,20 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.21'
+        go-version: '1.25'
 
     - name: Build binary
-      run: |
-        go build -o node-manager-cli
+      run: go build -ldflags "-X node-manager-cli/config.CLIVersion=${{ github.event.release.tag_name }}" -o node-manager-cli
+
     - name: Archive binary
-      run: |
-        tar -czvf node-manager-cli.tar.gz node-manager-cli
+      run: tar -czvf node-manager-cli.tar.gz node-manager-cli
 
-    - name: Upload release asset (tar.gz)
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./node-manager-cli.tar.gz
-        asset_name: node-manager-cli.tar.gz
-        asset_content_type: application/gzip
-      env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-    - name: Upload release asset (binary)
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./node-manager-cli
-        asset_name: node-manager-cli
-        asset_content_type: application/octet-stream
+    - name: Upload release assets
+      run: gh release upload "${{ github.event.release.tag_name }}" node-manager-cli node-manager-cli.tar.gz --clobber
       env:
         GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

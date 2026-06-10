@@ -3,9 +3,8 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"io"
-	"net/http"
 	"node-manager-cli/setup"
+	"node-manager-cli/utils"
 	"os"
 	"strings"
 
@@ -49,7 +48,7 @@ func autoUpdateCLI() {
 		fmt.Println("Updating CLI to the latest version...")
 		tempFilePath := "/tmp/node-manager-cli"
 		downloadURL := fmt.Sprintf("https://github.com/maestroi/node-manager-cli/releases/download/%s/node-manager-cli", latestVersion)
-		err = downloadFile(tempFilePath, downloadURL)
+		err = utils.DownloadFile(tempFilePath, downloadURL)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error downloading the latest CLI version: %v\n", err)
 			os.Exit(1)
@@ -68,27 +67,6 @@ func autoUpdateCLI() {
 	} else {
 		fmt.Println("You already have the latest CLI version.")
 	}
-}
-
-func downloadFile(filepath string, url string) error {
-	out, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func moveFile(src, dst string) error {

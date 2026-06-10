@@ -17,14 +17,15 @@ func UpdateRepository(protocol, branch string) {
 		os.Exit(1)
 	}
 
+	repoPath := AnsibleRepoPath(protocol)
 	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
-	if _, err := os.Stat("/opt/nimiq-ansible"); os.IsNotExist(err) {
+	if _, err := os.Stat(repoPath); os.IsNotExist(err) {
 		s.Prefix = "Cloning the Nimiq Ansible repository... "
 		s.Start()
 		if branch != "" {
-			runCommandSilently("git", "clone", "-b", branch, repoURL, "/opt/nimiq-ansible")
+			runCommandSilently("git", "clone", "-b", branch, repoURL, repoPath)
 		} else {
-			runCommandSilently("git", "clone", repoURL, "/opt/nimiq-ansible")
+			runCommandSilently("git", "clone", repoURL, repoPath)
 		}
 		s.Stop()
 		color.Green("Nimiq Ansible repository cloned")
@@ -32,11 +33,11 @@ func UpdateRepository(protocol, branch string) {
 		s.Prefix = "Updating the Nimiq Ansible repository... "
 		s.Start()
 		if branch != "" {
-			runCommandSilently("git", "-C", "/opt/nimiq-ansible", "fetch")
-			runCommandSilently("git", "-C", "/opt/nimiq-ansible", "checkout", branch)
-			runCommandSilently("git", "-C", "/opt/nimiq-ansible", "pull")
+			runCommandSilently("git", "-C", repoPath, "fetch")
+			runCommandSilently("git", "-C", repoPath, "checkout", branch)
+			runCommandSilently("git", "-C", repoPath, "pull")
 		} else {
-			runCommandSilently("git", "-C", "/opt/nimiq-ansible", "pull")
+			runCommandSilently("git", "-C", repoPath, "pull")
 		}
 		s.Stop()
 		color.Green("Nimiq Ansible repository updated")

@@ -8,22 +8,22 @@ import (
 	"github.com/fatih/color"
 )
 
-func RunPlaybook(network, nodeType, protocol, dataPath string) {
-	playbookPath := filepath.Join("/opt", fmt.Sprintf("%s-ansible", protocol), "ansible", "playbook.yml")
-	color.Blue("Running the Ansible playbook...")
-	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--extra-vars", fmt.Sprintf("network=%s node_type=%s data_path=%s", network, nodeType, dataPath))
+func RunPlaybook(network, nodeType, protocol, dataPath, nodeVersion string) {
+	playbookPath := AnsiblePlaybookPath(protocol)
+	color.Blue("Running the Ansible playbook with node version %s...", nodeVersion)
+	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--extra-vars", fmt.Sprintf("network=%s node_type=%s data_path=%s node_version=%s", network, nodeType, dataPath, nodeVersion))
 	color.Green("Ansible playbook run completed")
 }
 
-func RunPlaybookWithTags(network, nodeType, protocol, dataPath, tags string) {
-	playbookPath := filepath.Join("/opt", fmt.Sprintf("%s-ansible", protocol), "ansible", "playbook.yml")
-	color.Blue("Running the Ansible playbook with tags: %s", tags)
-	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--tags", tags, "--extra-vars", fmt.Sprintf("network=%s node_type=%s data_path=%s", network, nodeType, dataPath))
+func RunPlaybookWithTags(network, nodeType, protocol, dataPath, tags, nodeVersion string) {
+	playbookPath := AnsiblePlaybookPath(protocol)
+	color.Blue("Running the Ansible playbook with tags: %s (node version %s)", tags, nodeVersion)
+	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--tags", tags, "--extra-vars", fmt.Sprintf("network=%s node_type=%s data_path=%s node_version=%s", network, nodeType, dataPath, nodeVersion))
 	color.Green("Ansible playbook with tags %s run completed", tags)
 }
 
-func RunResetPlaybook(network, nodeType, protocol, dataPath string) {
-	RunPlaybookWithTags(network, nodeType, protocol, dataPath, "reset")
+func RunResetPlaybook(network, nodeType, protocol, dataPath, nodeVersion string) {
+	RunPlaybookWithTags(network, nodeType, protocol, dataPath, "reset", nodeVersion)
 }
 
 func CopyBinaryToUsrLocalBin() {

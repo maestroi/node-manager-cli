@@ -26,10 +26,10 @@ curl -L -o node-manager-cli https://github.com/maestroi/node-manager-cli/release
     cd node-manager-cli
     ```
 
-2. Build the CLI:
+2. Build the CLI (set the version to match your release tag):
 
     ```sh
-    go build -o node-manager-cli
+    go build -ldflags "-X node-manager-cli/config.CLIVersion=v1.0.0" -o node-manager-cli
     ```
 
 3. (Optional) Move the binary to `/usr/local/bin` for global access:
@@ -109,6 +109,22 @@ node-manager-cli version
 
 - Go 1.18+
 - Git
+- [pre-commit](https://pre-commit.com/) (optional, for local hooks)
+
+### Pre-commit
+
+Install hooks once:
+
+```sh
+pip install pre-commit
+pre-commit install
+```
+
+Run on all files:
+
+```sh
+pre-commit run --all-files
+```
 
 ### Project Structure
 
@@ -137,11 +153,13 @@ node-manager-cli/
 
 ### Building the CLI
 
-To build the CLI, run:
+Set `CLIVersion` at build time so `version` and `autoupdate` report the correct release:
 
 ```sh
-go build -o node-manager-cli
+go build -ldflags "-X node-manager-cli/config.CLIVersion=v1.0.0" -o node-manager-cli
 ```
+
+Without `-ldflags`, the default in `config/version.go` is used (`1.0.0`). GitHub release builds set this from the release tag automatically.
 
 ### Running Tests
 

@@ -5,10 +5,15 @@ var ProtocolRepoMap = map[string]string{
 	// Add other protocols here
 }
 
+var ProtocolNodeReleaseMap = map[string]string{
+	"nimiq": "nimiq/core-rs-albatross",
+	// Add other protocols here
+}
+
 var SupportedConfigurations = map[string]map[string][]string{
 	"nimiq": {
 		"testnet": {"validator", "full_node", "history_node"},
-		// Add other networks and node types here if needed
+		"mainnet": {"validator", "full_node", "history_node"},
 	},
 	// Add other protocols here if needed
 }

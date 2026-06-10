@@ -3,12 +3,12 @@ package setup
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"node-manager-cli/config"
+	"node-manager-cli/utils"
 )
 
 const ConfigFilePath = "/etc/node-manager-cli/node-manager-cli-config.json"
@@ -56,55 +56,44 @@ func LoadConfig() (Config, error) {
 
 func GetVersion(protocol, branch string) (string, error) {
 	if branch != "" {
-		return branch, nil
+		return normalizeNodeVersion(branch), nil
 	}
-	return getLatestVersion(protocol)
+	return getLatestNodeVersion(protocol)
 }
 
-func getLatestVersion(protocol string) (string, error) {
-	repoURL, ok := config.ProtocolRepoMap[protocol]
+func normalizeNodeVersion(version string) string {
+	return strings.TrimPrefix(strings.TrimSpace(version), "v")
+}
+
+func getLatestNodeVersion(protocol string) (string, error) {
+	repo, ok := config.ProtocolNodeReleaseMap[protocol]
 	if !ok {
 		return "", fmt.Errorf("protocol '%s' is not supported", protocol)
 	}
-	parts := strings.Split(repoURL, "/")
-	if len(parts) < 2 {
-		return "", fmt.Errorf("invalid repository URL: %s", repoURL)
-	}
-	owner := parts[len(parts)-2]
-	repo := strings.TrimSuffix(parts[len(parts)-1], ".git")
 
-	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/tags", owner, repo)
-	resp, err := http.Get(apiURL)
-	if err != nil {
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", repo)
+	var release struct {
+		TagName string `json:"tag_name"`
+	}
+	if err := utils.DecodeJSONFromURL(apiURL, &release); err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
-
-	var tags []struct {
-		Name string `json:"name"`
+	if release.TagName == "" {
+		return "", fmt.Errorf("no latest release found for %s", repo)
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&tags); err != nil {
-		return "", err
-	}
-	if len(tags) == 0 {
-		return "", fmt.Errorf("no tags found in repository %s/%s", owner, repo)
-	}
-	return tags[0].Name, nil
+	return normalizeNodeVersion(release.TagName), nil
 }
 
 func GetLatestCLIVersion() (string, error) {
 	apiURL := "https://api.github.com/repos/maestroi/node-manager-cli/releases/latest"
-	resp, err := http.Get(apiURL)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
 	var release struct {
 		TagName string `json:"tag_name"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
+	if err := utils.DecodeJSONFromURL(apiURL, &release); err != nil {
 		return "", err
+	}
+	if release.TagName == "" {
+		return "", fmt.Errorf("no latest release found for node-manager-cli")
 	}
 	return release.TagName, nil
 }

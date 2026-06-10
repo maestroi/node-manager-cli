@@ -46,7 +46,7 @@ func updateNode() {
 	}
 
 	if config.Version != version || force {
-		if config.Version != version {
+		if config.Version != version && !force {
 			fmt.Printf("A new version (%s) is available. Current version is %s. Do you want to update? (y/n): ", version, config.Version)
 			reader := bufio.NewReader(os.Stdin)
 			input, _ := reader.ReadString('\n')
@@ -65,7 +65,7 @@ func updateNode() {
 		config.Version = version
 		config.Branch = branch
 		setup.SaveConfig(config)
-		setup.RunPlaybook(config.Network, config.NodeType, config.Protocol, config.DataPath)
+		setup.RunPlaybook(config.Network, config.NodeType, config.Protocol, config.DataPath, version)
 		fmt.Println("Nimiq node update complete!")
 
 		ipAddress, err := utils.GetPublicIPAddress()
