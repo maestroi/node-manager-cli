@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"os"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -8,16 +9,26 @@ import (
 )
 
 func InstallDependencies() {
-	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond) // Build our new spinner
+	RepairConflictingDockerAptSources()
+
+	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 	s.Prefix = "Updating OS packages... "
 	s.Start()
-	runCommandSilently("apt-get", "update", "-y")
+	if err := runCommandCapture("apt-get", "update", "-y"); err != nil {
+		s.Stop()
+		color.Red("apt-get update failed. This is often caused by conflicting Docker apt sources from a previous install.")
+		color.Yellow("Try: sudo rm -f /etc/apt/sources.list.d/docker.list && sudo apt-get update")
+		os.Exit(1)
+	}
 	s.Stop()
 	color.Green("OS packages updated")
 
 	s.Prefix = "Installing necessary dependencies... "
 	s.Start()
-	runCommandSilently("apt-get", "install", "-y", "software-properties-common")
+	if err := runCommandCapture("apt-get", "install", "-y", "software-properties-common"); err != nil {
+		s.Stop()
+		os.Exit(1)
+	}
 	s.Stop()
 	color.Green("Necessary dependencies installed")
 }

@@ -46,6 +46,6 @@ func runWithTags() {
 	}
 
 	color.Blue("Running Ansible playbook with tags %s for %s network with protocol %s", tags, config.Network, config.Protocol)
-	setup.RunPlaybookWithTags(config.Network, config.NodeType, config.Protocol, config.DataPath, tags, config.Version)
+	setup.RunPlaybookWithTags(config.Network, config.NodeType, config.Protocol, config.DataPath, tags, config.Version, playbookOptionsFromConfig(config))
 	color.Green("Ansible playbook with tags %s run completed", tags)
 }

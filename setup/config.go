@@ -20,6 +20,8 @@ type Config struct {
 	Version    string `json:"version"`
 	Branch     string `json:"branch,omitempty"`
 	DataPath   string `json:"data_path"`
+	Monitor    bool   `json:"monitor"`
+	Homelab    bool   `json:"homelab"`
 	CLIVersion string `json:"cli_version"`
 }
 

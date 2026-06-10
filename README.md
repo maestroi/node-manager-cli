@@ -6,6 +6,7 @@ Node Manager CLI is a command-line tool designed to manage the setup, update, an
 ## Features
 
 - **Setup Nimiq Node**: Easily set up a Nimiq node for various networks and node types.
+- **Full Stack or Bare Install**: Default setup includes nginx, watchdog, and monitoring; homelab mode installs only the node.
 - **Update Nimiq Node**: Check for updates and update the Nimiq node to the latest version.
 - **Cleanup**: Remove all configurations and files related to the Nimiq node setup.
 - **List Supported Configurations**: View all supported protocols, networks, and node types.
@@ -51,12 +52,41 @@ sudo ./node-manager-cli setup --network <network> --node-type <node-type> --prot
 - `<network>`: The network to deploy the node on (default: `testnet`).
 - `<node-type>`: The type of the node (`validator`, `full_node`, `history_node`).
 - `<protocol>`: The protocol to deploy (`nimiq`).
-- `<branch>`: The branch to use for the protocol repository (e.g., `master`, `main`).
+- `<branch>`: The branch to use for the ansible repository (e.g., `main`).
+- `--no-monitor`: Skip Grafana, Prometheus, Loki, and related monitoring containers.
+- `--homelab`: Bare install with only the Nimiq node container.
 
-Example:
+#### Full stack (default)
+
+Installs the node plus nginx, watchdog, validator activator (for validators), and monitoring:
 
 ```sh
-sudo ./node-manager-cli setup --network testnet --node-type validator --protocol nimiq
+sudo node-manager-cli setup --network testnet --node-type validator --protocol nimiq
+```
+
+Skip monitoring only:
+
+```sh
+sudo node-manager-cli setup --network testnet --node-type validator --no-monitor
+```
+
+#### Bare homelab install
+
+For a homelab setup where you expose RPC directly and manage monitoring yourself:
+
+```sh
+sudo node-manager-cli setup --network mainnet --node-type validator --homelab
+```
+
+This installs only the Nimiq node container and exposes:
+
+- RPC on `0.0.0.0:8648`
+- P2P on `0.0.0.0:8443`
+
+Access RPC from your LAN, for example:
+
+```sh
+curl http://192.168.1.100:8648
 ```
 
 ### Update
@@ -125,6 +155,8 @@ Run on all files:
 ```sh
 pre-commit run --all-files
 ```
+
+The same checks run in CI on pull requests and pushes to `main` via GitHub Actions.
 
 ### Project Structure
 

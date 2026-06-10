@@ -8,22 +8,48 @@ import (
 	"github.com/fatih/color"
 )
 
-func RunPlaybook(network, nodeType, protocol, dataPath, nodeVersion string) {
+type PlaybookOptions struct {
+	Monitor bool
+	Homelab bool
+}
+
+func playbookExtraVars(network, nodeType, dataPath, nodeVersion string, opts PlaybookOptions) string {
+	if opts.Homelab {
+		return fmt.Sprintf(
+			"network=%s node_type=%s data_path=%s node_version=%s homelab=true",
+			network, nodeType, dataPath, nodeVersion,
+		)
+	}
+
+	return fmt.Sprintf(
+		"network=%s node_type=%s data_path=%s node_version=%s homelab=false monitor=%s nginx=true",
+		network, nodeType, dataPath, nodeVersion, boolString(opts.Monitor),
+	)
+}
+
+func boolString(value bool) string {
+	if value {
+		return "true"
+	}
+	return "false"
+}
+
+func RunPlaybook(network, nodeType, protocol, dataPath, nodeVersion string, opts PlaybookOptions) {
 	playbookPath := AnsiblePlaybookPath(protocol)
 	color.Blue("Running the Ansible playbook with node version %s...", nodeVersion)
-	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--extra-vars", fmt.Sprintf("network=%s node_type=%s data_path=%s node_version=%s", network, nodeType, dataPath, nodeVersion))
+	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--extra-vars", playbookExtraVars(network, nodeType, dataPath, nodeVersion, opts))
 	color.Green("Ansible playbook run completed")
 }
 
-func RunPlaybookWithTags(network, nodeType, protocol, dataPath, tags, nodeVersion string) {
+func RunPlaybookWithTags(network, nodeType, protocol, dataPath, tags, nodeVersion string, opts PlaybookOptions) {
 	playbookPath := AnsiblePlaybookPath(protocol)
 	color.Blue("Running the Ansible playbook with tags: %s (node version %s)", tags, nodeVersion)
-	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--tags", tags, "--extra-vars", fmt.Sprintf("network=%s node_type=%s data_path=%s node_version=%s", network, nodeType, dataPath, nodeVersion))
+	runCommand("ansible-playbook", "-i", "localhost,", "-c", "local", playbookPath, "--tags", tags, "--extra-vars", playbookExtraVars(network, nodeType, dataPath, nodeVersion, opts))
 	color.Green("Ansible playbook with tags %s run completed", tags)
 }
 
-func RunResetPlaybook(network, nodeType, protocol, dataPath, nodeVersion string) {
-	RunPlaybookWithTags(network, nodeType, protocol, dataPath, "reset", nodeVersion)
+func RunResetPlaybook(network, nodeType, protocol, dataPath, nodeVersion string, opts PlaybookOptions) {
+	RunPlaybookWithTags(network, nodeType, protocol, dataPath, "reset", nodeVersion, opts)
 }
 
 func CopyBinaryToUsrLocalBin() {

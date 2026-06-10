@@ -4,11 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"node-manager-cli/setup"
-	"node-manager-cli/utils"
 	"os"
 	"strings"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -65,18 +63,11 @@ func updateNode() {
 		config.Version = version
 		config.Branch = branch
 		setup.SaveConfig(config)
-		setup.RunPlaybook(config.Network, config.NodeType, config.Protocol, config.DataPath, version)
+		opts := playbookOptionsFromConfig(config)
+		setup.RunPlaybook(config.Network, config.NodeType, config.Protocol, config.DataPath, version, opts)
 		fmt.Println("Nimiq node update complete!")
-
-		ipAddress, err := utils.GetPublicIPAddress()
-		if err != nil {
-			color.Red("Error getting public IP address: %v", err)
-		} else {
-			color.Green("Grafana is available at: http://%s/grafana", ipAddress)
-			color.Yellow("Default Grafana username: admin")
-			color.Yellow("Default Grafana password: nimiq")
-			color.Red("It is strongly recommended to change the default Grafana password.")
-		}
+		printGrafanaInfoIfEnabled(opts.Monitor && !opts.Homelab)
+		printHomelabRPCInfo(opts.Homelab)
 	} else {
 		fmt.Println("You already have the latest version.")
 	}

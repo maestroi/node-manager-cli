@@ -3,7 +3,6 @@ package cmd
 import (
 	"node-manager-cli/config"
 	"node-manager-cli/setup"
-	"node-manager-cli/utils"
 	"os"
 
 	"github.com/fatih/color"
@@ -15,6 +14,8 @@ var nodeType string
 var protocol string
 var branch string
 var path string
+var noMonitor bool
+var homelab bool
 
 var setupCmd = &cobra.Command{
 	Use:   "setup",
@@ -31,6 +32,8 @@ func init() {
 	setupCmd.Flags().StringVarP(&protocol, "protocol", "p", "nimiq", "Protocol to deploy (e.g., nimiq, another-protocol)")
 	setupCmd.Flags().StringVarP(&path, "data-path", "d", "/opt", "location to install the datadir of node")
 	setupCmd.Flags().StringVarP(&branch, "branch", "b", "", "Branch to use for the protocol repository (e.g., master, main)")
+	setupCmd.Flags().BoolVar(&noMonitor, "no-monitor", false, "Skip the bundled monitoring stack (Grafana, Prometheus, etc.)")
+	setupCmd.Flags().BoolVar(&homelab, "homelab", false, "Bare install: node only, no nginx, monitoring, watchdog, or validator activator")
 }
 
 func setupNode() {
@@ -61,6 +64,11 @@ func setupNode() {
 		os.Exit(1)
 	}
 
+	playbookOpts := setup.PlaybookOptions{Homelab: homelab}
+	if !homelab {
+		playbookOpts.Monitor = !noMonitor
+	}
+
 	setup.SaveConfig(setup.Config{
 		Protocol:   protocol,
 		Network:    network,
@@ -68,18 +76,12 @@ func setupNode() {
 		Version:    version,
 		Branch:     branch,
 		DataPath:   path,
+		Monitor:    playbookOpts.Monitor,
+		Homelab:    playbookOpts.Homelab,
 		CLIVersion: config.CLIVersion,
 	})
-	setup.RunPlaybook(network, nodeType, protocol, path, version)
+	setup.RunPlaybook(network, nodeType, protocol, path, version, playbookOpts)
 	color.Green("Nimiq node setup/update complete!")
-
-	ipAddress, err := utils.GetPublicIPAddress()
-	if err != nil {
-		color.Red("Error getting public IP address: %v", err)
-	} else {
-		color.Green("Grafana is available at: http://%s/grafana", ipAddress)
-		color.Yellow("Default Grafana username: admin")
-		color.Yellow("Default Grafana password: nimiq")
-		color.Red("It is strongly recommended to change the default Grafana password.")
-	}
+	printGrafanaInfoIfEnabled(playbookOpts.Monitor && !playbookOpts.Homelab)
+	printHomelabRPCInfo(playbookOpts.Homelab)
 }
