@@ -14,6 +14,20 @@ Node Manager CLI is a command-line tool designed to manage the setup, update, an
 
 ## Easy install
 
+Install the latest release to `/usr/local/bin`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/maestroi/node-manager-cli/main/scripts/install.sh | sudo bash
+```
+
+Install a specific version:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/maestroi/node-manager-cli/main/scripts/install.sh | sudo VERSION=v0.8.0 bash
+```
+
+Download only (without installing to `/usr/local/bin`):
+
 ```sh
 curl -L -o node-manager-cli https://github.com/maestroi/node-manager-cli/releases/latest/download/node-manager-cli && chmod +x node-manager-cli
 ```
