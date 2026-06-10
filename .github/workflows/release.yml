@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,4 +29,4 @@ jobs:
     - name: Upload release assets
       run: gh release upload "${{ github.event.release.tag_name }}" node-manager-cli node-manager-cli.tar.gz --clobber
       env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
